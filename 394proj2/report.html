@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+           "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<meta name="GENERATOR" content="TtH 4.01">
+ <style type="text/css"> div.p { margin-top: 7pt;}</style>
+ <style type="text/css"><!--
+ td div.comp { margin-top: -0.6ex; margin-bottom: -1ex;}
+ td div.comb { margin-top: -0.6ex; margin-bottom: -.6ex;}
+ td div.hrcomp { line-height: 0.9; margin-top: -0.8ex; margin-bottom: -1ex;}
+ td div.norm {line-height:normal;}
+ span.roman {font-family: serif; font-style: normal; font-weight: normal;} 
+ span.overacc2 {position: relative;  left: .8em; top: -1.2ex;}
+ span.overacc1 {position: relative;  left: .6em; top: -1.2ex;} --></style>
+
+
+<title> Eligibility Traces</title>
+ 
+<h1 align="center">Eligibility Traces </h1>
+
+<h3 align="center">Shun Zhang (sz4554) </h3>
+<i>The source code is from Reinforcement Learning project of <a href="http://www.cs.utexas.edu/~pstone/Courses/343spring12/index.html">CS343 Artificial Intelligence</a> course.
+The framework is provided. The Q-learning part was pair programmed by Paul Nguyen and me.
+Now I implemented SARSA(&#955;) and other experiment utility functions based on it for this assignment.</i>
+
+<div class="p"><!----></div>
+ <h2><a name="tth_sEc1">
+1</a>&nbsp;&nbsp;Demonstration of SARSA(&#955;)</h2>
+
+<div class="p"><!----></div>
+The experiment is run in a gridworld shown below. It's similar to the random walk example in the book.
+The difference is that the actions contain up, down, left, right.
+The start state is the bottom-left one.
+There are 2 exiting states - the top-right one has a reward of 1 and the middle-right one has a reward of -1. No rewards for other states.
+It's episodic. When exiting from the exiting states, the agent goes back to the start state.
+The parameters are &#1013; =  0.3, &#945; =  0.5, &#955; =  0.9, &#947; =  0.8.
+Accumulating-trace is applied.
+
+<div class="p"><!----></div>
+From the first figure, we can observe that the exiting state has the value of 0.5, half of the reward of 1 (as the learning rate is 0.5).
+Other state, action pair whose values updated are on the path reaching the exiting state. The closer the state is to the exiting state, the larger update is made.
+
+<div class="p"><!----></div>
+We can also observe the flaw of accumulating-trace.
+Consider the biggest value so far (the brightest in the figure) - the action going up in the state next to the good exiting state.
+It is visited more than one time (bumping into the wall), so considered responsible more for the +1 reward later.
+While the action really leads to the good exiting state (going right) is only visited once. It has less update.
+
+<div class="p"><!----></div>
+Commands for generating these results are in <tt>/src/README</tt>.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<a name="tth_fIg1">
+</a> <center><img src="sarsa1.png" alt="sarsa1.png" />
+<img src="sarsa500.png" alt="sarsa500.png" />
+
+<center>Figure 1: Q function after 1 iteration and 500 iterations</center>
+<a name="sarsa">
+</a>
+</center>
+<div class="p"><!----></div>
+ <h2><a name="tth_sEc2">
+2</a>&nbsp;&nbsp;Accumulate-trace And Replace-trace For Different &#955;s</h2>
+
+<div class="p"><!----></div>
+     <h3><a name="tth_sEc2.1">
+2.1</a>&nbsp;&nbsp;Compare By Performance</h3>
+
+<div class="p"><!----></div>
+We compare the performance of accumulate-trace and replace-trace in this gridworld.
+First, we evaluate the performance of different traces and &#955;s by the rewards the agent obtained.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<a name="tth_fIg2">
+</a> <center><img src="exp1R.png" alt="exp1R.png" />
+
+<center>Figure 2: Accumulate-trace And Replace-trace For Different &#955;s</center>
+<a name="traceR">
+</a>
+</center>
+<div class="p"><!----></div>
+As shown in Figure <a href="#traceR">2</a>, when &#955; is 0, it is exactly one step SARSA. Accumulate-trace and replace-trace share the same performance.
+The larger &#955; is, the further the states would be affected in the past.
+The issue that whether we should put more weights on the states visited many times (this is what accumulate-trace does) becomes essential.
+As the environment is Markov, taking a action on a state for more times does not make it more responsible for the reward in the future.
+So replace-trace wins here.
+
+<div class="p"><!----></div>
+We also observe that the average reward drops when &#955; is too big.
+In this gridworld, the reward is lead directly by the states next to the exiting states.
+Caring too much about the states in distance from the reward would harm.
+For example, going up and bumping into the wall, and then going right to the exiting state with reward +1
+would make the agent think that bumping into the wall is related to this reward, which is actually not the case.
+
+<div class="p"><!----></div>
+     <h3><a name="tth_sEc2.2">
+2.2</a>&nbsp;&nbsp;Compare By RMS Error</h3>
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<a name="tth_fIg3">
+</a> <center><img src="exp1.png" alt="exp1.png" />
+
+<center>Figure 3: Accumulate-trace And Replace-trace For Different &#955;s</center>
+<a name="trace">
+</a>
+</center>
+<div class="p"><!----></div>
+In Figure <a href="#trace">3</a>, I show the RMS error on values is used in the book.
+It's reasonable because the policy is generated from the values.
+The problem of this metric is that a small error on the values of states may lead to big difference in policy - it depends on how the errors distributed.
+As we are pursuing the optimal policy, the rewards the agent gained, shown in previous subsection, are a convincing metric.
+
+<div class="p"><!----></div>
+The error is big, compared to the random walk in the book.
+It's okay, because there are many state, action pairs that the agent won't care about.
+The agent finds the states leading to the bad exiting state less interesting. It visits them only in exploration.
+So it doesn't learn much about those states, which caused the error.
+
+<div class="p"><!----></div>
+I computed the RMS error by compare it with the real Q values.
+I run policy iteration for 150 iterations, with 100 sweeps of policy evaluations within one iteration.
+The Q values have converged - actually, they are same as the results after 100 iterations.
+
+<div class="p"><!----></div>
+We can observe that the values on the optimal path (going up till the wall and going right to the exiting state) are learned well.
+Actually, in the first few episodes the optimal path is found for this simple gridworld.
+The rest of the episodes are just making the values more accurate.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<a name="tth_fIg4">
+</a> <center><img src="answer.png" alt="answer.png" />
+
+<center>Figure 4: The Q values after convergence by policy iteration</center>
+<a name="answer">
+</a>
+</center>
+<div class="p"><!----></div>
+     <h3><a name="tth_sEc2.3">
+2.3</a>&nbsp;&nbsp;Compare By Policy Convergence Rate</h3>
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<a name="tth_fIg5">
+</a> <center><img src="exp3.png" alt="exp3.png" />
+
+<center>Figure 5: The Q values after convergence by policy iteration</center>
+<a name="convergence">
+</a>
+</center>
+<div class="p"><!----></div>
+In Figure <a href="#convergence">5</a>, we show the optimality of actions on the optimal path. There are 5 states on the optimal path leading to the good exit.
+We are comparing replaced-trace SARSA(&#955;) with value iterations.
+SARSA(&#955;) is almost certain to find the optimal policy after a few iterations, because of the update according to eligibility trace.
+Value iterations need time to back-propagate, but it stably converges to the optimal policy, because it doesn't need explore (Bellman equation is satisfied for this part).
+The oscillation of SARSA is caused by &#1013;-greedy exploration.
+
+<div class="p"><!----></div>
+For a larger state space, we can imagine eligibility trace can converge to the optimal policy faster, staying around there and keeping exploration.
+Value iteration would take some time to achieve Bellman optimality equation. When it does, it's sure that the optimal policy is found.
+
+<div class="p"><!----></div>
+
+<br /><br /><hr /><small>File translated from
+T<sub><font size="-1">E</font></sub>X
+by <a href="http://hutchinson.belmont.ma.us/tth/">
+T<sub><font size="-1">T</font></sub>H</a>,
+version 4.01.<br />On 18 Feb 2013, 11:39.</small>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+           "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<meta name="GENERATOR" content="TtH 4.01">
+ <style type="text/css"> div.p { margin-top: 7pt;}</style>
+ <style type="text/css"><!--
+ td div.comp { margin-top: -0.6ex; margin-bottom: -1ex;}
+ td div.comb { margin-top: -0.6ex; margin-bottom: -.6ex;}
+ td div.hrcomp { line-height: 0.9; margin-top: -0.8ex; margin-bottom: -1ex;}
+ td div.norm {line-height:normal;}
+ span.roman {font-family: serif; font-style: normal; font-weight: normal;} 
+ span.overacc2 {position: relative;  left: .8em; top: -1.2ex;}
+ span.overacc1 {position: relative;  left: .6em; top: -1.2ex;} --></style>
+
+
+<title> N-armed bandit Problem</title>
+ 
+<h1 align="center">N-armed bandit Problem </h1>
+
+<h3 align="center">Shun Zhang (sz4554) </h3>
+  <h2><a name="tth_sEc1">
+1</a>&nbsp;&nbsp;&#1013;-Greedy Method</h2>
+
+<div class="p"><!----></div>
+These are the results same as figure 2.1 in the book.
+These are tested on the 10-armed testbed, averaged over 2000 tasks. All methods used sample averages as their action-value estimates.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<a name="tth_fIg1">
+</a> <center><img src="reward.png" alt="reward.png" />
+<img src="optimal.png" alt="optimal.png" />
+
+<center>Figure 1: Average performance of &#1013;-greedy action-value methods. </center>
+<a name="actionValue">
+</a>
+</center>
+<div class="p"><!----></div>
+The vertical bars are 95% confidence interval (same case for all the figures in this report).
+It can be observed from the optimal action figure in Figure <a href="#actionValue">1</a> that when &#1013; is 0, the agent is sticking to the current best choice after 100 iterations.
+On the other hand, the performance of &#1013; =  0.1 is unstable, even though it converges at a better average reward.
+
+<div class="p"><!----></div>
+Actually, the average length of confidence intervals of average reward (upper one in Figure <a href="#actionValue">1</a>) for each &#1013; is:
+
+<div class="p"><!----></div>
+
+<table>
+<tr><td align="left">&#1013; </td><td align="left">average length of confidence interval </td></tr>
+<tr><td align="left">0 </td><td align="left">0.0514 </td></tr>
+<tr><td align="left">0.01 </td><td align="left">0.0523 </td></tr>
+<tr><td align="left">0.1 </td><td align="left">0.0555 </td></tr></table>
+
+
+<div class="p"><!----></div>
+So, with higher &#1013;, the agent explores more, we are less confident on the average reward the agent would get.
+
+<div class="p"><!----></div>
+Additionally, we can observe from the optimal action figure in Figure <a href="#actionValue">1</a> that, after (safely speaking) 300 iterations, the confidence interval bars become distinct.
+So, we can be almost sure that &#1013; =  0.1 has a better optimal action percentage than &#1013; =  0.01.
+
+<div class="p"><!----></div>
+ <h2><a name="tth_sEc2">
+2</a>&nbsp;&nbsp;Soft Max Algorithm</h2>
+
+<div class="p"><!----></div>
+This is the softmax action selection method using the Gibbs distribution fare on the 10-armed testbed, also averaged over 2000 tasks.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<a name="tth_fIg2">
+</a> <center><img src="rewardS.png" alt="rewardS.png" />
+<img src="optimalS.png" alt="optimalS.png" />
+
+<center>Figure 2: Average performance of softmax action selection methods. </center>
+<a name="softMax">
+</a>
+</center>
+<div class="p"><!----></div>
+Small &#964; means that the agent is greedy. So in Figure  &#964; =  0.01 has the similar performance of small &#1013;.
+
+<div class="p"><!----></div>
+The following graph takes a close look at what happens within first 100 iterations, before the average rewards converge.
+&#964; =  0.01 can have a good performance at the very beginning, because it almost always takes the best action.
+As it refuses to explore, its average reward converges to a small value.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<a name="tth_fIg3">
+</a> <center><img src="rewardSNarrow.png" alt="rewardSNarrow.png" />
+
+<center>Figure 3: Average performance of softmax action selection methods. </center>
+<a name="softMaxNarrow">
+</a>
+</center>
+<div class="p"><!----></div>
+We can also observe from Figure <a href="#softMax">2</a> that the method of &#964; =  0.3 converges at highest average reward.
+As the performance go worse when &#964; =  0.1 and &#964; =  0.5, the best &#964; for the 10-armed bandit problem should be between 0.1 and 0.5.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<a name="tth_fIg4">
+</a> <center><img src="optimalST.png" alt="optimalST.png" />
+
+<center>Figure 4: Average performance of softmax action selection methods for different &#964;. </center>
+<a name="softMaxT">
+</a>
+</center>
+<div class="p"><!----></div>
+In Figure <a href="#softMaxT">4</a>, we find out the optimal action percentage the algorithm converges at 1000th iteration, for different &#964;.
+The best &#964; is around 0.25.
+Too much exploring (higher &#964;) or being to greedy (lower &#964;) would lead to worse performance.
+
+<div class="p"><!----></div>
+
+<br /><br /><hr /><small>File translated from
+T<sub><font size="-1">E</font></sub>X
+by <a href="http://hutchinson.belmont.ma.us/tth/">
+T<sub><font size="-1">T</font></sub>H</a>,
+version 4.01.<br />On  8 Feb 2013, 15:29.</small>
+</html>

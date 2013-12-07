@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+           "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<meta name="GENERATOR" content="TtH 4.01">
+ <style type="text/css"> div.p { margin-top: 7pt;}</style>
+ <style type="text/css"><!--
+ td div.comp { margin-top: -0.6ex; margin-bottom: -1ex;}
+ td div.comb { margin-top: -0.6ex; margin-bottom: -.6ex;}
+ td div.hrcomp { line-height: 0.9; margin-top: -0.8ex; margin-bottom: -1ex;}
+ td div.norm {line-height:normal;}
+ span.roman {font-family: serif; font-style: normal; font-weight: normal;} 
+ span.overacc2 {position: relative;  left: .8em; top: -1.2ex;}
+ span.overacc1 {position: relative;  left: .6em; top: -1.2ex;} --></style>
+
+
+<title> Bootstrapping With Function Approximation</title>
+ 
+<h1 align="center">Bootstrapping With Function Approximation </h1>
+
+<h3 align="center">Shun Zhang (sz4554) </h3>
+ <i>The source code is from Reinforcement Learning project of
+<a href="http://www.cs.utexas.edu/~pstone/Courses/343spring12/index.html">CS343 Artificial Intelligence</a>
+course.
+The framework is provided. The Q-learning part was pair programmed by Paul Nguyen and me.
+Now I implemented other experiment utility functions based on it for this assignment.</i>
+
+<div class="p"><!----></div>
+ <h2><a name="tth_sEc1">
+1</a>&nbsp;&nbsp;Off-Policy Bootstrapping</h2>
+
+<div class="p"><!----></div>
+First, I repeat the experiment of Baird's counterexample. It's a off-policy bootstrapping (using value iteration) with function approximation.
+The setting of parameters is same as shown in the book.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<a name="tth_fIg1">
+</a> <center><img src="baird.png" alt="baird.png" />
+
+<center>Figure 1: Barid's Counterexample from the book.</center>
+</center>
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<a name="tth_fIg2">
+</a> <center><img src="exp3.png" alt="exp3.png" />
+
+<center>Figure 2: Barid's Counterexample.</center>
+</center>
+<div class="p"><!----></div>
+I extend the number of iterations to 20000 (4 times as shown in the book). The pattern keeps going on without convergence.
+
+<div class="p"><!----></div>
+For convenience of analysis, the graphs below are MSE and values on each iteration.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<a name="tth_fIg3">
+</a> <center><img src="exp4.png" alt="exp4.png" />
+
+<center>Figure 3: Barid's Counterexample: MSE on each iteration.</center>
+</center>
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<a name="tth_fIg4">
+</a> <center><img src="exp5.png" alt="exp5.png" />
+
+<center>Figure 4: Barid's Counterexample: values of states on each iteration.</center>
+</center>
+<div class="p"><!----></div>
+We observe that every time &#952;(1)..&#952;(5),&#952;(7) intercept with &#955;(6), the MSE drops a little.
+It is a trial of approaching the correct values, but it's making things worse.
+&#952;(7), here, would affect all the other states when updating a certain states.
+
+<div class="p"><!----></div>
+This set of &#952;s is chosen on purpose by the author.
+Of course, if we initialize them to be 0, or choose other set of (more reasonable) &#952;s, the divergence won't happen.
+
+<div class="p"><!----></div>
+ <h2><a name="tth_sEc2">
+2</a>&nbsp;&nbsp;On-Policy Bootstrapping</h2>
+
+<div class="p"><!----></div>
+The book mentions that the nonbootstrapping methods find minimal MSE, while the bootstrapping methods find near-minimal MSE.
+I'm comparing the MSE with different &#955;, which means different level of bootstrapping, in the gridworld.
+
+<div class="p"><!----></div>
+The gridworld starts from the bottom-left state, and ends in top-right state with reward of +1. No rewards for other state, action pairs.
+To apply function approximation, I uses the row number and column number as features to describe a state.
+Concretely, &#952;(0)=1, &#952;(1)=Row_Number, &#952;(2)=Column_Number, where &#952;(0) is bias.
+
+<div class="p"><!----></div>
+One problem is how to encode the actions - as we need to extract features from a state, action pair. The &#952; so far only represents the state.
+I add or subtract 0.25 on the corresponding &#952; to encode the action.
+For example, on state (1, 2) and taking right action, the features are &#952;(0)=1, &#952;(1)=1.25, &#952;(2)=2.
+
+<div class="p"><!----></div>
+Obviously, &#947; = 0.9. The reward of +1 is back-propagated to all the states before.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<a name="tth_fIg5">
+</a> <center><img src="answer.png" alt="answer.png" />
+
+<center>Figure 5: The values for the Gridworld after convergence, using value iteration.</center>
+</center>
+<div class="p"><!----></div>
+The setting of &#952; should make sense. The values are approximately on a plane, where it's higher on the terminal state, lower on the starting state.
+
+<div class="p"><!----></div>
+I use SARSA(&#955;) in this model. The following is the graph showing their MSE, compared to optimal values.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<a name="tth_fIg6">
+</a> <center><img src="exp2.png" alt="exp2.png" />
+
+<center>Figure 6: MSE For Different &#955;s</center>
+</center>
+<div class="p"><!----></div>
+It's disappointing that the convergences for different &#955;s are not differed.
+I also tried random walk model. It shows a similar performance.
+The formula in the book doesn't say that more bootstrapping must lead to higher MSE. It's the bound that can be higher.
+
+<div class="p"><!----></div>
+I use a constant &#945;, which keeps it fluctuating while not actually converging.
+As this is SARSA, in each episode, the agent is trying to fit that specific trace, which neglects values of other states.
+
+<div class="p"><!----></div>
+
+<br /><br /><hr /><small>File translated from
+T<sub><font size="-1">E</font></sub>X
+by <a href="http://hutchinson.belmont.ma.us/tth/">
+T<sub><font size="-1">T</font></sub>H</a>,
+version 4.01.<br />On 24 Feb 2013, 22:37.</small>
+</html>
